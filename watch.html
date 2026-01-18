@@ -3,47 +3,61 @@
 <head>
 <title>Watch Video</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="stylesheet" href="style.css">
 
 <meta property="og:title" content="Watch Video">
 <meta property="og:description" content="Watch this video now">
+<meta property="og:type" content="video.other">
+<meta property="og:site_name" content="DarkStream">
+
+<link rel="preconnect" href="https://res.cloudinary.com">
+
+<style>
+body{margin:0;font-family:sans-serif;background:#0d0d0d;color:#fff}
+.container{max-width:900px;margin:auto;padding:15px}
+.adbox{text-align:center;margin:20px 0}
+</style>
 </head>
 
-<body style="background:#0d0d0d;color:#fff;">
+<body>
 
 <header style="padding:12px;border-bottom:1px solid #222;display:flex;justify-content:space-between;">
   <a href="index.html" style="color:#ff0000;font-size:20px;text-decoration:none;">DarkStream</a>
   <a href="index.html" style="color:#fff;text-decoration:none;">🏠 Home</a>
 </header>
 
-<div class="container" style="max-width:900px;margin:auto;padding:15px;">
+<div class="container">
 
-<!-- ================= TOP AD (EFFECTIVEGATECPM) ================= -->
-<div id="container-ab156ca71ac330f95a6cd68d1ae74514"
-     style="margin:15px 0;text-align:center;min-height:90px;"></div>
-
-<script src="https://pl28509879.effectivegatecpm.com/0e/57/a0/0e57a0d2b62e2772e4b19c701328e94e.js"></script>
-<!-- ============================================================ -->
+<!-- ================= TOP AD (EFFECTIVEGATE – NATIVE) ================= -->
+<div class="adbox">
+<script async="async" data-cfasync="false"
+src="https://pl28509871.effectivegatecpm.com/89927707a9add77c81162243cfa9c89b/invoke.js"></script>
+<div id="container-89927707a9add77c81162243cfa9c89b"></div>
+</div>
+<!-- ================================================================ -->
 
 <!-- VIDEO PLAYER -->
 <div style="background:#000;border-radius:10px;overflow:hidden;border:1px solid #333;">
-  <video id="mainPlayer" controls autoplay style="width:100%;aspect-ratio:16/9;"></video>
+  <video id="mainPlayer" controls autoplay muted playsinline
+  style="width:100%;aspect-ratio:16/9;"></video>
 </div>
 
-<!-- VIDEO INFO -->
 <h1 id="vidTitle" style="margin:15px 0;font-size:22px;">Loading...</h1>
 
 <div style="display:flex;gap:10px;">
-  <a id="downloadBtn" href="#" style="flex:1;background:#cc0000;padding:10px;text-align:center;color:#fff;text-decoration:none;">
+  <a id="downloadBtn" href="#"
+     style="flex:1;background:#cc0000;padding:10px;text-align:center;color:#fff;text-decoration:none;">
     ⬇ Download
   </a>
-  <button onclick="shareVideo()" style="flex:1;background:#0088cc;border:none;color:#fff;">
+  <button onclick="shareVideo()"
+     style="flex:1;background:#0088cc;border:none;color:#fff;">
     🔗 Share
   </button>
 </div>
 
-<!-- ================= BELOW VIDEO AD (HPF) ================= -->
-<div style="margin:25px 0;text-align:center;min-height:300px;">
+<!-- ================= BELOW VIDEO AD (HPF 300x250 – HIGH CPM) ================= -->
+<h3 style="margin-top:25px;color:#aaa">🔥 Recommended for you</h3>
+
+<div class="adbox">
 <script>
   atOptions = {
     'key' : '9419cc143f44d80cac2f52f79ceda29d',
@@ -55,16 +69,15 @@
 </script>
 <script src="https://www.highperformanceformat.com/9419cc143f44d80cac2f52f79ceda29d/invoke.js"></script>
 </div>
-<!-- ========================================================== -->
+<!-- ========================================================================== -->
 
 </div>
 
-<!-- ================= POPUNDER (LAST) ================= -->
+<!-- ================= POPUNDER (LOAD ONCE – LAST) ================= -->
 <script src="https://pl28509879.effectivegatecpm.com/0e/57/a0/0e57a0d2b62e2772e4b19c701328e94e.js"></script>
-<!-- =================================================== -->
+<!-- ================================================================ -->
 
 <script>
-// URL params
 function getParam(p){
   return new URLSearchParams(location.search).get(p);
 }
@@ -78,6 +91,12 @@ window.onload=function(){
     return;
   }
 
+  // basic safety (optional)
+  if(!v.startsWith("https://")){
+    alert("Invalid video source");
+    return;
+  }
+
   mainPlayer.src=v;
   downloadBtn.href=v;
 
@@ -85,6 +104,9 @@ window.onload=function(){
     vidTitle.innerText=decodeURIComponent(t);
     document.title=decodeURIComponent(t);
   }
+
+  const ogv=document.querySelector("meta[property='og:video']");
+  if(ogv) ogv.content=v;
 };
 
 function shareVideo(){
@@ -99,4 +121,3 @@ function shareVideo(){
 
 </body>
 </html>
-
