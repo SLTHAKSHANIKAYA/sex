@@ -31,9 +31,15 @@ header{
   padding:15px;
 }
 
+.video-layout{
+  display:flex;
+  gap:15px;
+  justify-content:center;
+}
+
 .video-wrap{
+  flex:1;
   max-width:900px;
-  margin:auto;
   background:#000;
   border-radius:10px;
   overflow:hidden;
@@ -43,35 +49,13 @@ header{
 video{
   width:100%;
   aspect-ratio:16/9;
-  background:#000;
 }
 
-h1{
+.side-ad{
+  width:160px;
+  min-height:600px;
   text-align:center;
-  margin:15px 0;
-  font-size:22px;
 }
-
-.actions{
-  display:flex;
-  gap:10px;
-  max-width:900px;
-  margin:10px auto;
-}
-
-.actions a,
-.actions button{
-  flex:1;
-  padding:12px;
-  text-align:center;
-  font-size:16px;
-  border:none;
-  border-radius:6px;
-  color:#fff;
-}
-
-.actions a{background:#cc0000;text-decoration:none;}
-.actions button{background:#0088cc;}
 
 .adbox{
   text-align:center;
@@ -79,19 +63,14 @@ h1{
   max-width:320px;
 }
 
-/* SIDE ADS – DESKTOP ONLY */
-.side-ads{
-  display:flex;
-  justify-content:center;
-  gap:20px;
-}
-
-.side-ad{
-  width:160px;
-}
-
+/* MOBILE */
 @media(max-width:900px){
-  .side-ad{display:none;}
+  .video-layout{
+    flex-direction:column;
+  }
+  .side-ad{
+    display:none;
+  }
 }
 </style>
 </head>
@@ -105,26 +84,31 @@ h1{
 
 <div class="container">
 
-<!-- VIDEO -->
-<div class="video-wrap">
-  <video id="player" controls playsinline preload="metadata"></video>
-</div>
+<!-- VIDEO + SIDE ADS -->
+<div class="video-layout">
 
-<h1 id="title">Loading...</h1>
-
-<div class="actions">
-  <a href="#" id="downloadBtn">⬇ Download</a>
-  <button onclick="share()">🔗 Share</button>
-</div>
-
-<!-- BELOW VIDEO AD (SAFE – LOAD LATE) -->
-<div class="adbox" id="belowAd"></div>
-
-<!-- SIDE ADS (DESKTOP ONLY) -->
-<div class="side-ads">
+  <!-- LEFT SIDE AD -->
   <div class="side-ad" id="leftAd"></div>
+
+  <!-- VIDEO -->
+  <div class="video-wrap">
+    <video id="player" controls playsinline preload="metadata"></video>
+  </div>
+
+  <!-- RIGHT SIDE AD -->
   <div class="side-ad" id="rightAd"></div>
+
 </div>
+
+<h1 id="title" style="text-align:center;margin:15px 0;">Loading...</h1>
+
+<div style="display:flex;gap:10px;max-width:900px;margin:auto;">
+  <a id="downloadBtn" href="#" style="flex:1;background:#cc0000;padding:10px;text-align:center;color:#fff;text-decoration:none;">⬇ Download</a>
+  <button onclick="share()" style="flex:1;background:#0088cc;border:none;color:#fff;">🔗 Share</button>
+</div>
+
+<!-- BELOW VIDEO AD -->
+<div class="adbox" id="belowAd"></div>
 
 </div>
 
@@ -132,12 +116,6 @@ h1{
 function getParam(p){
   return new URLSearchParams(location.search).get(p);
 }
-
-function isMobile(){
-  return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-}
-
-let realDownload = "";
 
 window.onload = function(){
 
@@ -150,17 +128,17 @@ window.onload = function(){
   }
 
   player.src = v;
-  realDownload = v;
+  downloadBtn.href = v;
 
   if(t){
     title.innerText = decodeURIComponent(t);
     document.title = decodeURIComponent(t);
   }
 
-  /* LOAD ADS ONLY AFTER VIDEO START */
-  player.addEventListener("play",function(){
+  /* LOAD ADS AFTER VIDEO START */
+  player.addEventListener("play", function(){
 
-    // BELOW VIDEO AD
+    /* BELOW VIDEO AD */
     if(!belowAd.innerHTML){
       belowAd.innerHTML = `
 <script>
@@ -175,56 +153,30 @@ atOptions = {
 `;
     }
 
-    // SIDE ADS (DESKTOP ONLY)
-    if(window.innerWidth > 900 && !leftAd.innerHTML){
-      leftAd.innerHTML = rightAd.innerHTML = `
+    /* LEFT SIDE AD */
+    if(!leftAd.innerHTML && window.innerWidth > 900){
+      leftAd.innerHTML = `
 <script async data-cfasync="false"
-src="https://pl28509871.effectivegatecpm.com/89927707a9add77c81162243cfa9c89b/invoke.js"><\/script>
-<div id="container-89927707a9add77c81162243cfa9c89b"><\/div>
+src="https://pl28509871.effectivegatecpm.com/LEFT123/invoke.js"><\/script>
+<div id="container-LEFT123"><\/div>
+`;
+    }
+
+    /* RIGHT SIDE AD */
+    if(!rightAd.innerHTML && window.innerWidth > 900){
+      rightAd.innerHTML = `
+<script async data-cfasync="false"
+src="https://pl28509871.effectivegatecpm.com/RIGHT456/invoke.js"><\/script>
+<div id="container-RIGHT456"><\/div>
 `;
     }
 
   });
-
-  /* DOWNLOAD INTERSTITIAL */
-  downloadBtn.onclick = function(e){
-    e.preventDefault();
-
-    // show interstitial
-    const w = window.open("", "_blank");
-    w.document.write(`
-      <html><head><title>Please wait...</title>
-      <meta name="viewport" content="width=device-width, initial-scale=1">
-      <style>
-        body{background:#000;color:#fff;
-        display:flex;align-items:center;justify-content:center;
-        height:100vh;font-family:sans-serif;}
-      </style>
-      </head>
-      <body>
-        <div>
-          <h2>Preparing download...</h2>
-          <p>Please wait 3 seconds</p>
-
-          <!-- INTERSTITIAL AD -->
-          <script async data-cfasync="false"
-          src="https://pl28509871.effectivegatecpm.com/89927707a9add77c81162243cfa9c89b/invoke.js"><\/script>
-          <div id="container-89927707a9add77c81162243cfa9c89b"><\/div>
-
-          <script>
-            setTimeout(function(){
-              location.href="${realDownload}";
-            },3000);
-          <\/script>
-        </div>
-      </body></html>
-    `);
-  };
 };
 
 function share(){
   if(navigator.share){
-    navigator.share({title::document.title,url:location.href});
+    navigator.share({title:document.title,url:location.href});
   }else{
     navigator.clipboard.writeText(location.href);
     alert("Link copied");
