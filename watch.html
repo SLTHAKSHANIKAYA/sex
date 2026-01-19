@@ -46,6 +46,33 @@ video{
   background:#000;
 }
 
+h1{
+  text-align:center;
+  margin:15px 0;
+  font-size:22px;
+}
+
+.actions{
+  display:flex;
+  gap:10px;
+  max-width:900px;
+  margin:10px auto;
+}
+
+.actions a,
+.actions button{
+  flex:1;
+  padding:12px;
+  text-align:center;
+  font-size:16px;
+  border:none;
+  border-radius:6px;
+  color:#fff;
+}
+
+.actions a{background:#cc0000;text-decoration:none;}
+.actions button{background:#0088cc;}
+
 .adbox{
   text-align:center;
   margin:20px auto;
@@ -64,13 +91,7 @@ video{
 }
 
 @media(max-width:900px){
-  .side-ads{
-    flex-direction:column;
-    align-items:center;
-  }
-  .side-ad{
-    display:none;
-  }
+  .side-ad{display:none;}
 }
 </style>
 </head>
@@ -86,17 +107,17 @@ video{
 
 <!-- VIDEO -->
 <div class="video-wrap">
-  <video id="player" controls playsinline></video>
+  <video id="player" controls playsinline preload="metadata"></video>
 </div>
 
-<h1 id="title" style="text-align:center;margin:15px 0">Loading...</h1>
+<h1 id="title">Loading...</h1>
 
-<div style="display:flex;gap:10px;max-width:900px;margin:auto;">
-  <a id="download" href="#" style="flex:1;background:#cc0000;padding:10px;text-align:center;color:#fff;text-decoration:none;">⬇ Download</a>
-  <button onclick="share()" style="flex:1;background:#0088cc;border:none;color:#fff;">🔗 Share</button>
+<div class="actions">
+  <a href="#" id="downloadBtn">⬇ Download</a>
+  <button onclick="share()">🔗 Share</button>
 </div>
 
-<!-- BELOW VIDEO AD (SAFE) -->
+<!-- BELOW VIDEO AD (SAFE – LOAD LATE) -->
 <div class="adbox" id="belowAd"></div>
 
 <!-- SIDE ADS (DESKTOP ONLY) -->
@@ -112,9 +133,14 @@ function getParam(p){
   return new URLSearchParams(location.search).get(p);
 }
 
+function isMobile(){
+  return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+}
+
+let realDownload = "";
+
 window.onload = function(){
 
-  /* VIDEO LOAD FIRST */
   const v = getParam("v");
   const t = getParam("t");
 
@@ -124,18 +150,19 @@ window.onload = function(){
   }
 
   player.src = v;
-  download.href = v;
+  realDownload = v;
 
   if(t){
     title.innerText = decodeURIComponent(t);
     document.title = decodeURIComponent(t);
   }
 
-  /* ADS LOAD AFTER VIDEO READY */
-  player.onplaying = function(){
+  /* LOAD ADS ONLY AFTER VIDEO START */
+  player.addEventListener("play",function(){
 
     // BELOW VIDEO AD
-    belowAd.innerHTML = `
+    if(!belowAd.innerHTML){
+      belowAd.innerHTML = `
 <script>
 atOptions = {
   'key' : '9419cc143f44d80cac2f52f79ceda29d',
@@ -146,21 +173,58 @@ atOptions = {
 <\/script>
 <script src="https://www.highperformanceformat.com/9419cc143f44d80cac2f52f79ceda29d/invoke.js"><\/script>
 `;
+    }
 
-    // SIDE ADS (DESKTOP)
-    if(window.innerWidth > 900){
+    // SIDE ADS (DESKTOP ONLY)
+    if(window.innerWidth > 900 && !leftAd.innerHTML){
       leftAd.innerHTML = rightAd.innerHTML = `
 <script async data-cfasync="false"
 src="https://pl28509871.effectivegatecpm.com/89927707a9add77c81162243cfa9c89b/invoke.js"><\/script>
 <div id="container-89927707a9add77c81162243cfa9c89b"><\/div>
 `;
     }
+
+  });
+
+  /* DOWNLOAD INTERSTITIAL */
+  downloadBtn.onclick = function(e){
+    e.preventDefault();
+
+    // show interstitial
+    const w = window.open("", "_blank");
+    w.document.write(`
+      <html><head><title>Please wait...</title>
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <style>
+        body{background:#000;color:#fff;
+        display:flex;align-items:center;justify-content:center;
+        height:100vh;font-family:sans-serif;}
+      </style>
+      </head>
+      <body>
+        <div>
+          <h2>Preparing download...</h2>
+          <p>Please wait 3 seconds</p>
+
+          <!-- INTERSTITIAL AD -->
+          <script async data-cfasync="false"
+          src="https://pl28509871.effectivegatecpm.com/89927707a9add77c81162243cfa9c89b/invoke.js"><\/script>
+          <div id="container-89927707a9add77c81162243cfa9c89b"><\/div>
+
+          <script>
+            setTimeout(function(){
+              location.href="${realDownload}";
+            },3000);
+          <\/script>
+        </div>
+      </body></html>
+    `);
   };
 };
 
 function share(){
   if(navigator.share){
-    navigator.share({title:document.title,url:location.href});
+    navigator.share({title::document.title,url:location.href});
   }else{
     navigator.clipboard.writeText(location.href);
     alert("Link copied");
