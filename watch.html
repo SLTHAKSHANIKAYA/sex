@@ -21,6 +21,7 @@ header {
   border-bottom: 1px solid #222;
   display: flex;
   justify-content: space-between;
+  align-items: center;
 }
 
 .container {
@@ -29,10 +30,23 @@ header {
   padding: 15px;
 }
 
+/* Top Ad - Before video */
+.top-ad {
+  text-align: center;
+  margin: 15px auto;
+  padding: 10px;
+  max-width: 728px;
+  min-height: 90px;
+  background: #1a1a1a;
+  border-radius: 8px;
+  border: 1px solid #333;
+}
+
 .video-layout {
   display: flex;
   gap: 15px;
   justify-content: center;
+  margin: 20px 0;
 }
 
 .video-wrap {
@@ -47,6 +61,7 @@ header {
 video {
   width: 100%;
   aspect-ratio: 16/9;
+  display: block;
 }
 
 .side-ad {
@@ -55,10 +70,36 @@ video {
   text-align: center;
 }
 
-.adbox {
+.side-ad-box {
+  background: #1a1a1a;
+  border-radius: 8px;
+  border: 1px solid #333;
+  padding: 10px;
+  margin-bottom: 15px;
+  min-height: 250px;
+}
+
+/* Below video ads */
+.below-video-ad {
   text-align: center;
   margin: 20px auto;
+  padding: 10px;
+  max-width: 728px;
+  min-height: 90px;
+  background: #1a1a1a;
+  border-radius: 8px;
+  border: 1px solid #333;
+}
+
+.inline-ad {
+  text-align: center;
+  margin: 20px auto;
+  padding: 10px;
   max-width: 320px;
+  min-height: 250px;
+  background: #1a1a1a;
+  border-radius: 8px;
+  border: 1px solid #333;
 }
 
 /* Sticky bottom ad for mobile */
@@ -71,8 +112,9 @@ video {
   background: #1a1a1a;
   padding: 8px;
   text-align: center;
-  border-top: 1px solid #333;
+  border-top: 2px solid #333;
   z-index: 1000;
+  box-shadow: 0 -2px 10px rgba(0,0,0,0.5);
 }
 
 .close-ad {
@@ -83,11 +125,31 @@ video {
   color: #fff;
   border: none;
   border-radius: 50%;
-  width: 20px;
-  height: 20px;
-  font-size: 12px;
+  width: 22px;
+  height: 22px;
+  font-size: 14px;
   cursor: pointer;
   line-height: 1;
+  font-weight: bold;
+}
+
+.close-ad:hover {
+  background: #888;
+}
+
+.title-section {
+  text-align: center;
+  margin: 20px 0;
+  max-width: 900px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 10px;
+  max-width: 900px;
+  margin: 20px auto;
 }
 
 /* MOBILE */
@@ -103,44 +165,68 @@ video {
   .sticky-bottom-ad {
     display: block;
   }
+
+  .top-ad,
+  .below-video-ad {
+    max-width: 100%;
+  }
 }
 </style>
 </head>
 <body>
 <header>
-  <a href="index.html" style="color:#ff0000;font-size:20px;text-decoration:none;">DarkStream</a>
+  <a href="index.html" style="color:#ff0000;font-size:20px;text-decoration:none;font-weight:bold;">DarkStream</a>
   <a href="index.html" style="color:#fff;text-decoration:none;">🏠 Home</a>
 </header>
 
 <div class="container">
+  <!-- TOP AD - BEFORE VIDEO (Desktop: 728x90, Mobile: 320x50) -->
+  <div class="top-ad" id="topAd"></div>
+
   <!-- VIDEO + SIDE ADS -->
   <div class="video-layout">
-    <!-- LEFT SIDE AD -->
-    <div class="side-ad" id="leftAd"></div>
+    <!-- LEFT SIDE AD (Desktop Only) -->
+    <div class="side-ad">
+      <div class="side-ad-box" id="leftAd1"></div>
+      <div class="side-ad-box" id="leftAd2"></div>
+    </div>
     
     <!-- VIDEO -->
     <div class="video-wrap">
       <video id="player" controls playsinline preload="metadata"></video>
     </div>
     
-    <!-- RIGHT SIDE AD -->
-    <div class="side-ad" id="rightAd"></div>
+    <!-- RIGHT SIDE AD (Desktop Only) -->
+    <div class="side-ad">
+      <div class="side-ad-box" id="rightAd1"></div>
+      <div class="side-ad-box" id="rightAd2"></div>
+    </div>
   </div>
 
-  <h1 id="title" style="text-align:center;margin:15px 0;">Loading...</h1>
-  
-  <div style="display:flex;gap:10px;max-width:900px;margin:auto;">
-    <a id="downloadBtn" href="#" style="flex:1;background:#cc0000;padding:10px;text-align:center;color:#fff;text-decoration:none;">⬇ Download</a>
-    <button onclick="share()" style="flex:1;background:#0088cc;border:none;color:#fff;padding:10px;cursor:pointer;">🔗 Share</button>
+  <!-- TITLE SECTION -->
+  <div class="title-section">
+    <h1 id="title" style="margin:15px 0;">Loading...</h1>
   </div>
   
-  <!-- BELOW VIDEO AD -->
-  <div class="adbox" id="belowAd"></div>
+  <!-- ACTION BUTTONS -->
+  <div class="action-buttons">
+    <a id="downloadBtn" href="#" style="flex:1;background:#cc0000;padding:12px;text-align:center;color:#fff;text-decoration:none;border-radius:5px;font-weight:bold;">⬇ Download</a>
+    <button onclick="share()" style="flex:1;background:#0088cc;border:none;color:#fff;padding:12px;cursor:pointer;border-radius:5px;font-weight:bold;">🔗 Share</button>
+  </div>
+  
+  <!-- BELOW VIDEO AD 1 (Desktop: 728x90, Mobile: 320x100) -->
+  <div class="below-video-ad" id="belowVideoAd1"></div>
+
+  <!-- INLINE AD (Mobile & Desktop: 300x250) -->
+  <div class="inline-ad" id="inlineAd1"></div>
+
+  <!-- BELOW VIDEO AD 2 (Desktop: 728x90, Mobile: 320x100) -->
+  <div class="below-video-ad" id="belowVideoAd2"></div>
 </div>
 
-<!-- STICKY BOTTOM AD (Mobile Only) -->
+<!-- STICKY BOTTOM AD (Mobile Only - 320x50) -->
 <div class="sticky-bottom-ad" id="stickyAd">
-  <button class="close-ad" onclick="document.getElementById('stickyAd').style.display='none'">×</button>
+  <button class="close-ad" onclick="closeStickyAd()">×</button>
   <div id="stickyAdContent"></div>
 </div>
 
@@ -150,13 +236,14 @@ function getParam(p) {
 }
 
 let adsLoaded = false;
+let stickyAdClosed = false;
 
 window.onload = function() {
   const v = getParam("v");
   const t = getParam("t");
   
   if (!v || !v.startsWith("https://")) {
-    document.body.innerHTML = "<h2 style='text-align:center;margin-top:50px;'>Video Not Found</h2>";
+    document.body.innerHTML = "<h2 style='text-align:center;margin-top:50px;color:#fff;'>Video Not Found</h2>";
     return;
   }
   
@@ -166,87 +253,191 @@ window.onload = function() {
   if (t) {
     title.innerText = decodeURIComponent(t);
     document.title = decodeURIComponent(t);
+  } else {
+    title.innerText = "Watch Video";
   }
   
-  /* LOAD ADS AFTER VIDEO STARTS PLAYING */
+  // Load top ad immediately for initial monetization
+  loadTopAd();
+  
+  // Load remaining ads when video starts playing
   player.addEventListener("play", function() {
     if (adsLoaded) return;
     adsLoaded = true;
-    
-    loadAds();
+    loadAllAds();
   }, { once: true });
+  
+  // Also load ads if user interacts but doesn't play (after 3 seconds)
+  setTimeout(function() {
+    if (!adsLoaded) {
+      loadAllAds();
+      adsLoaded = true;
+    }
+  }, 3000);
 };
 
-function loadAds() {
+function loadTopAd() {
+  // Top banner ad (visible immediately)
+  const topScript1 = document.createElement('script');
+  topScript1.innerHTML = `
+    atOptions = {
+      'key' : '9419cc143f44d80cac2f52f79ceda29d',
+      'format' : 'iframe',
+      'height' : 90,
+      'width' : 728,
+      'params' : {}
+    };
+  `;
+  topAd.appendChild(topScript1);
+  
+  const topScript2 = document.createElement('script');
+  topScript2.src = "https://www.highperformanceformat.com/9419cc143f44d80cac2f52f79ceda29d/invoke.js";
+  topAd.appendChild(topScript2);
+}
+
+function loadAllAds() {
   const isMobile = window.innerWidth <= 900;
   
-  /* BELOW VIDEO AD - Desktop & Mobile */
-  if (!belowAd.innerHTML) {
-    const script1 = document.createElement('script');
-    script1.innerHTML = `
+  // BELOW VIDEO AD 1
+  const below1Script1 = document.createElement('script');
+  below1Script1.innerHTML = `
+    atOptions = {
+      'key' : '9419cc143f44d80cac2f52f79ceda29d',
+      'format' : 'iframe',
+      'height' : ${isMobile ? 100 : 90},
+      'width' : ${isMobile ? 320 : 728},
+      'params' : {}
+    };
+  `;
+  belowVideoAd1.appendChild(below1Script1);
+  
+  const below1Script2 = document.createElement('script');
+  below1Script2.src = "https://www.highperformanceformat.com/9419cc143f44d80cac2f52f79ceda29d/invoke.js";
+  belowVideoAd1.appendChild(below1Script2);
+  
+  // INLINE AD (300x250)
+  const inlineScript1 = document.createElement('script');
+  inlineScript1.innerHTML = `
+    atOptions = {
+      'key' : '9419cc143f44d80cac2f52f79ceda29d',
+      'format' : 'iframe',
+      'height' : 250,
+      'width' : 300,
+      'params' : {}
+    };
+  `;
+  inlineAd1.appendChild(inlineScript1);
+  
+  const inlineScript2 = document.createElement('script');
+  inlineScript2.src = "https://www.highperformanceformat.com/9419cc143f44d80cac2f52f79ceda29d/invoke.js";
+  inlineAd1.appendChild(inlineScript2);
+  
+  // BELOW VIDEO AD 2
+  const below2Script1 = document.createElement('script');
+  below2Script1.innerHTML = `
+    atOptions = {
+      'key' : '9419cc143f44d80cac2f52f79ceda29d',
+      'format' : 'iframe',
+      'height' : ${isMobile ? 100 : 90},
+      'width' : ${isMobile ? 320 : 728},
+      'params' : {}
+    };
+  `;
+  belowVideoAd2.appendChild(below2Script1);
+  
+  const below2Script2 = document.createElement('script');
+  belowVideoAd2.src = "https://www.highperformanceformat.com/9419cc143f44d80cac2f52f79ceda29d/invoke.js";
+  belowVideoAd2.appendChild(below2Script2);
+  
+  if (!isMobile) {
+    // LEFT SIDE AD 1 (160x600)
+    const leftScript1 = document.createElement('script');
+    leftScript1.async = true;
+    leftScript1.setAttribute('data-cfasync', 'false');
+    leftScript1.src = "https://pl28509871.effectivegatecpm.com/89927707a9add77c81162243cfa9c89b/invoke.js";
+    leftAd1.appendChild(leftScript1);
+    
+    const leftDiv1 = document.createElement('div');
+    leftDiv1.id = "container-89927707a9add77c81162243cfa9c89b";
+    leftAd1.appendChild(leftDiv1);
+    
+    // LEFT SIDE AD 2
+    const leftScript2 = document.createElement('script');
+    leftScript2.innerHTML = `
       atOptions = {
         'key' : '9419cc143f44d80cac2f52f79ceda29d',
         'format' : 'iframe',
         'height' : 250,
-        'width' : 300,
+        'width' : 160,
         'params' : {}
       };
     `;
-    belowAd.appendChild(script1);
+    leftAd2.appendChild(leftScript2);
     
-    const script2 = document.createElement('script');
-    script2.src = "https://www.highperformanceformat.com/9419cc143f44d80cac2f52f79ceda29d/invoke.js";
-    belowAd.appendChild(script2);
-  }
-  
-  if (!isMobile) {
-    /* LEFT SIDE AD - Desktop Only */
-    if (!leftAd.innerHTML) {
-      const script = document.createElement('script');
-      script.async = true;
-      script.setAttribute('data-cfasync', 'false');
-      script.src = "https://pl28509871.effectivegatecpm.com/89927707a9add77c81162243cfa9c89b/invoke.js";
-      leftAd.appendChild(script);
-      
-      const div = document.createElement('div');
-      div.id = "container-89927707a9add77c81162243cfa9c89b";
-      leftAd.appendChild(div);
-    }
+    const leftScript2b = document.createElement('script');
+    leftScript2b.src = "https://www.highperformanceformat.com/9419cc143f44d80cac2f52f79ceda29d/invoke.js";
+    leftAd2.appendChild(leftScript2b);
     
-    /* RIGHT SIDE AD - Desktop Only */
-    if (!rightAd.innerHTML) {
-      const script = document.createElement('script');
-      script.src = "https://pl28509879.effectivegatecpm.com/0e/57/a0/0e57a0d2b62e2772e4b19c701328e94e.js";
-      rightAd.appendChild(script);
-    }
+    // RIGHT SIDE AD 1
+    const rightScript1 = document.createElement('script');
+    rightScript1.src = "https://pl28509879.effectivegatecpm.com/0e/57/a0/0e57a0d2b62e2772e4b19c701328e94e.js";
+    rightAd1.appendChild(rightScript1);
+    
+    // RIGHT SIDE AD 2
+    const rightScript2 = document.createElement('script');
+    rightScript2.innerHTML = `
+      atOptions = {
+        'key' : '9419cc143f44d80cac2f52f79ceda29d',
+        'format' : 'iframe',
+        'height' : 250,
+        'width' : 160,
+        'params' : {}
+      };
+    `;
+    rightAd2.appendChild(rightScript2);
+    
+    const rightScript2b = document.createElement('script');
+    rightScript2b.src = "https://www.highperformanceformat.com/9419cc143f44d80cac2f52f79ceda29d/invoke.js";
+    rightAd2.appendChild(rightScript2b);
   } else {
-    /* STICKY BOTTOM AD - Mobile Only */
-    if (!stickyAdContent.innerHTML) {
-      const script1 = document.createElement('script');
-      script1.innerHTML = `
+    // STICKY BOTTOM AD (Mobile Only - 320x50)
+    if (!stickyAdClosed) {
+      const stickyScript1 = document.createElement('script');
+      stickyScript1.innerHTML = `
         atOptions = {
           'key' : '9419cc143f44d80cac2f52f79ceda29d',
           'format' : 'iframe',
-          'height' : 90,
+          'height' : 50,
           'width' : 320,
           'params' : {}
         };
       `;
-      stickyAdContent.appendChild(script1);
+      stickyAdContent.appendChild(stickyScript1);
       
-      const script2 = document.createElement('script');
-      script2.src = "https://www.highperformanceformat.com/9419cc143f44d80cac2f52f79ceda29d/invoke.js";
-      stickyAdContent.appendChild(script2);
+      const stickyScript2 = document.createElement('script');
+      stickyScript2.src = "https://www.highperformanceformat.com/9419cc143f44d80cac2f52f79ceda29d/invoke.js";
+      stickyAdContent.appendChild(stickyScript2);
     }
   }
 }
 
+function closeStickyAd() {
+  document.getElementById('stickyAd').style.display = 'none';
+  stickyAdClosed = true;
+}
+
 function share() {
   if (navigator.share) {
-    navigator.share({ title: document.title, url: location.href });
+    navigator.share({ 
+      title: document.title, 
+      url: location.href 
+    }).catch(() => {});
   } else {
-    navigator.clipboard.writeText(location.href);
-    alert("Link copied");
+    navigator.clipboard.writeText(location.href).then(() => {
+      alert("Link copied to clipboard!");
+    }).catch(() => {
+      alert("Unable to copy link");
+    });
   }
 }
 </script>
