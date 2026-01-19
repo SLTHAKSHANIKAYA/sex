@@ -4,185 +4,251 @@
 <meta charset="UTF-8">
 <title>Watch Video</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-
 <meta property="og:title" content="Watch Video">
 <meta property="og:description" content="Watch this video now">
 <meta property="og:type" content="video.other">
 <meta property="og:site_name" content="DarkStream">
-
 <style>
-body{
-  margin:0;
-  background:#0d0d0d;
-  color:#fff;
-  font-family:sans-serif;
+body {
+  margin: 0;
+  background: #0d0d0d;
+  color: #fff;
+  font-family: sans-serif;
 }
 
-header{
-  padding:12px;
-  border-bottom:1px solid #222;
-  display:flex;
-  justify-content:space-between;
+header {
+  padding: 12px;
+  border-bottom: 1px solid #222;
+  display: flex;
+  justify-content: space-between;
 }
 
-.container{
-  max-width:1200px;
-  margin:auto;
-  padding:15px;
+.container {
+  max-width: 1200px;
+  margin: auto;
+  padding: 15px;
 }
 
-.video-layout{
-  display:flex;
-  gap:15px;
-  justify-content:center;
+.video-layout {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
 }
 
-.video-wrap{
-  flex:1;
-  max-width:900px;
-  background:#000;
-  border-radius:10px;
-  overflow:hidden;
-  border:1px solid #333;
+.video-wrap {
+  flex: 1;
+  max-width: 900px;
+  background: #000;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid #333;
 }
 
-video{
-  width:100%;
-  aspect-ratio:16/9;
+video {
+  width: 100%;
+  aspect-ratio: 16/9;
 }
 
-.side-ad{
-  width:160px;
-  min-height:600px;
-  text-align:center;
+.side-ad {
+  width: 160px;
+  min-height: 600px;
+  text-align: center;
 }
 
-.adbox{
-  text-align:center;
-  margin:20px auto;
-  max-width:320px;
+.adbox {
+  text-align: center;
+  margin: 20px auto;
+  max-width: 320px;
+}
+
+/* Sticky bottom ad for mobile */
+.sticky-bottom-ad {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #1a1a1a;
+  padding: 8px;
+  text-align: center;
+  border-top: 1px solid #333;
+  z-index: 1000;
+}
+
+.close-ad {
+  position: absolute;
+  top: 4px;
+  right: 8px;
+  background: #666;
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  font-size: 12px;
+  cursor: pointer;
+  line-height: 1;
 }
 
 /* MOBILE */
-@media(max-width:900px){
-  .video-layout{
-    flex-direction:column;
+@media(max-width: 900px) {
+  .video-layout {
+    flex-direction: column;
   }
-  .side-ad{
-    display:none;
+  
+  .side-ad {
+    display: none;
+  }
+  
+  .sticky-bottom-ad {
+    display: block;
   }
 }
 </style>
 </head>
-
 <body>
-
 <header>
   <a href="index.html" style="color:#ff0000;font-size:20px;text-decoration:none;">DarkStream</a>
   <a href="index.html" style="color:#fff;text-decoration:none;">🏠 Home</a>
 </header>
 
 <div class="container">
-
-<!-- VIDEO + SIDE ADS -->
-<div class="video-layout">
-
-  <!-- LEFT SIDE AD -->
-  <div class="side-ad" id="leftAd"></div>
-
-  <!-- VIDEO -->
-  <div class="video-wrap">
-    <video id="player" controls playsinline preload="metadata"></video>
+  <!-- VIDEO + SIDE ADS -->
+  <div class="video-layout">
+    <!-- LEFT SIDE AD -->
+    <div class="side-ad" id="leftAd"></div>
+    
+    <!-- VIDEO -->
+    <div class="video-wrap">
+      <video id="player" controls playsinline preload="metadata"></video>
+    </div>
+    
+    <!-- RIGHT SIDE AD -->
+    <div class="side-ad" id="rightAd"></div>
   </div>
 
-  <!-- RIGHT SIDE AD -->
-  <div class="side-ad" id="rightAd"></div>
-
+  <h1 id="title" style="text-align:center;margin:15px 0;">Loading...</h1>
+  
+  <div style="display:flex;gap:10px;max-width:900px;margin:auto;">
+    <a id="downloadBtn" href="#" style="flex:1;background:#cc0000;padding:10px;text-align:center;color:#fff;text-decoration:none;">⬇ Download</a>
+    <button onclick="share()" style="flex:1;background:#0088cc;border:none;color:#fff;padding:10px;cursor:pointer;">🔗 Share</button>
+  </div>
+  
+  <!-- BELOW VIDEO AD -->
+  <div class="adbox" id="belowAd"></div>
 </div>
 
-<h1 id="title" style="text-align:center;margin:15px 0;">Loading...</h1>
-
-<div style="display:flex;gap:10px;max-width:900px;margin:auto;">
-  <a id="downloadBtn" href="#" style="flex:1;background:#cc0000;padding:10px;text-align:center;color:#fff;text-decoration:none;">⬇ Download</a>
-  <button onclick="share()" style="flex:1;background:#0088cc;border:none;color:#fff;">🔗 Share</button>
-</div>
-
-<!-- BELOW VIDEO AD -->
-<div class="adbox" id="belowAd"></div>
-
+<!-- STICKY BOTTOM AD (Mobile Only) -->
+<div class="sticky-bottom-ad" id="stickyAd">
+  <button class="close-ad" onclick="document.getElementById('stickyAd').style.display='none'">×</button>
+  <div id="stickyAdContent"></div>
 </div>
 
 <script>
-function getParam(p){
+function getParam(p) {
   return new URLSearchParams(location.search).get(p);
 }
 
-window.onload = function(){
+let adsLoaded = false;
 
+window.onload = function() {
   const v = getParam("v");
   const t = getParam("t");
-
-  if(!v || !v.startsWith("https://")){
-    document.body.innerHTML="<h2 style='text-align:center;margin-top:50px;'>Video Not Found</h2>";
+  
+  if (!v || !v.startsWith("https://")) {
+    document.body.innerHTML = "<h2 style='text-align:center;margin-top:50px;'>Video Not Found</h2>";
     return;
   }
-
+  
   player.src = v;
   downloadBtn.href = v;
-
-  if(t){
+  
+  if (t) {
     title.innerText = decodeURIComponent(t);
     document.title = decodeURIComponent(t);
   }
-
-  /* LOAD ADS AFTER VIDEO START */
-  player.addEventListener("play", function(){
-
-    /* BELOW VIDEO AD */
-    if(!belowAd.innerHTML){
-      belowAd.innerHTML = `
-<script>
-atOptions = {
-  'key' : '9419cc143f44d80cac2f52f79ceda29d',
-  'format' : 'iframe',
-  'height' : 250,
-  'width' : 300
-};
-<\/script>
-<script src="https://www.highperformanceformat.com/9419cc143f44d80cac2f52f79ceda29d/invoke.js"><\/script>
-`;
-    }
-
-    /* LEFT SIDE AD */
-    if(!leftAd.innerHTML && window.innerWidth > 900){
-      leftAd.innerHTML = `
-<script async data-cfasync="false"
-src="https://pl28509871.effectivegatecpm.com/LEFT123/invoke.js"><\/script>
-<div id="container-LEFT123"><\/div>
-`;
-    }
-
-    /* RIGHT SIDE AD */
-    if(!rightAd.innerHTML && window.innerWidth > 900){
-      rightAd.innerHTML = `
-<script async data-cfasync="false"
-src="https://pl28509871.effectivegatecpm.com/RIGHT456/invoke.js"><\/script>
-<div id="container-RIGHT456"><\/div>
-`;
-    }
-
-  });
+  
+  /* LOAD ADS AFTER VIDEO STARTS PLAYING */
+  player.addEventListener("play", function() {
+    if (adsLoaded) return;
+    adsLoaded = true;
+    
+    loadAds();
+  }, { once: true });
 };
 
-function share(){
-  if(navigator.share){
-    navigator.share({title:document.title,url:location.href});
-  }else{
+function loadAds() {
+  const isMobile = window.innerWidth <= 900;
+  
+  /* BELOW VIDEO AD - Desktop & Mobile */
+  if (!belowAd.innerHTML) {
+    const script1 = document.createElement('script');
+    script1.innerHTML = `
+      atOptions = {
+        'key' : '9419cc143f44d80cac2f52f79ceda29d',
+        'format' : 'iframe',
+        'height' : 250,
+        'width' : 300,
+        'params' : {}
+      };
+    `;
+    belowAd.appendChild(script1);
+    
+    const script2 = document.createElement('script');
+    script2.src = "https://www.highperformanceformat.com/9419cc143f44d80cac2f52f79ceda29d/invoke.js";
+    belowAd.appendChild(script2);
+  }
+  
+  if (!isMobile) {
+    /* LEFT SIDE AD - Desktop Only */
+    if (!leftAd.innerHTML) {
+      const script = document.createElement('script');
+      script.async = true;
+      script.setAttribute('data-cfasync', 'false');
+      script.src = "https://pl28509871.effectivegatecpm.com/89927707a9add77c81162243cfa9c89b/invoke.js";
+      leftAd.appendChild(script);
+      
+      const div = document.createElement('div');
+      div.id = "container-89927707a9add77c81162243cfa9c89b";
+      leftAd.appendChild(div);
+    }
+    
+    /* RIGHT SIDE AD - Desktop Only */
+    if (!rightAd.innerHTML) {
+      const script = document.createElement('script');
+      script.src = "https://pl28509879.effectivegatecpm.com/0e/57/a0/0e57a0d2b62e2772e4b19c701328e94e.js";
+      rightAd.appendChild(script);
+    }
+  } else {
+    /* STICKY BOTTOM AD - Mobile Only */
+    if (!stickyAdContent.innerHTML) {
+      const script1 = document.createElement('script');
+      script1.innerHTML = `
+        atOptions = {
+          'key' : '9419cc143f44d80cac2f52f79ceda29d',
+          'format' : 'iframe',
+          'height' : 90,
+          'width' : 320,
+          'params' : {}
+        };
+      `;
+      stickyAdContent.appendChild(script1);
+      
+      const script2 = document.createElement('script');
+      script2.src = "https://www.highperformanceformat.com/9419cc143f44d80cac2f52f79ceda29d/invoke.js";
+      stickyAdContent.appendChild(script2);
+    }
+  }
+}
+
+function share() {
+  if (navigator.share) {
+    navigator.share({ title: document.title, url: location.href });
+  } else {
     navigator.clipboard.writeText(location.href);
     alert("Link copied");
   }
 }
 </script>
-
 </body>
 </html>
