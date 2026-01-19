@@ -10,14 +10,12 @@
 <meta property="og:type" content="video.other">
 <meta property="og:site_name" content="DarkStream">
 
-<link rel="preconnect" href="https://res.cloudinary.com">
-
 <style>
 body{
   margin:0;
-  font-family:sans-serif;
   background:#0d0d0d;
   color:#fff;
+  font-family:sans-serif;
 }
 
 header{
@@ -33,56 +31,46 @@ header{
   padding:15px;
 }
 
-/* VIDEO + SIDE ADS */
-.video-layout{
-  display:flex;
-  gap:15px;
-  justify-content:center;
-}
-
 .video-wrap{
-  flex:1;
-  max-width:850px;
+  max-width:900px;
+  margin:auto;
   background:#000;
   border-radius:10px;
   overflow:hidden;
   border:1px solid #333;
 }
 
-.side-ad{
-  width:160px;
-  text-align:center;
+video{
+  width:100%;
+  aspect-ratio:16/9;
+  background:#000;
 }
 
 .adbox{
   text-align:center;
-  margin:20px 0;
+  margin:20px auto;
+  max-width:320px;
 }
 
-/* MOBILE & TABLET */
-@media (max-width:900px){
-  .video-layout{
+/* SIDE ADS – DESKTOP ONLY */
+.side-ads{
+  display:flex;
+  justify-content:center;
+  gap:20px;
+}
+
+.side-ad{
+  width:160px;
+}
+
+@media(max-width:900px){
+  .side-ads{
     flex-direction:column;
+    align-items:center;
   }
   .side-ad{
     display:none;
   }
-}
-
-/* DESKTOP ONLY */
-.desktop-only{
-  display:block;
-}
-
-@media (max-width:900px){
-  .desktop-only{
-    display:none;
-  }
-}
-
-button,a{
-  border-radius:6px;
-  font-size:16px;
 }
 </style>
 </head>
@@ -96,122 +84,81 @@ button,a{
 
 <div class="container">
 
-<!-- ================= TOP AD (DESKTOP ONLY) ================= -->
-<div class="adbox desktop-only">
-<script async data-cfasync="false"
-src="https://pl28509871.effectivegatecpm.com/89927707a9add77c81162243cfa9c89b/invoke.js"></script>
-<div id="container-89927707a9add77c81162243cfa9c89b"></div>
-</div>
-<!-- ========================================================= -->
-
-<!-- VIDEO + SIDE ADS -->
-<div class="video-layout">
-
-  <!-- LEFT AD (DESKTOP) -->
-  <div class="side-ad desktop-only">
-    <!-- side ad code here if needed -->
-  </div>
-
-  <!-- VIDEO -->
-  <div class="video-wrap">
-    <video id="mainPlayer" controls playsinline
-      style="width:100%;aspect-ratio:16/9;"></video>
-  </div>
-
-  <!-- RIGHT AD (DESKTOP) -->
-  <div class="side-ad desktop-only">
-    <!-- side ad code here if needed -->
-  </div>
-
+<!-- VIDEO -->
+<div class="video-wrap">
+  <video id="player" controls playsinline></video>
 </div>
 
-<h1 id="vidTitle" style="margin:15px 0;font-size:22px;">Loading...</h1>
+<h1 id="title" style="text-align:center;margin:15px 0">Loading...</h1>
 
-<div style="display:flex;gap:10px;">
-  <a id="downloadBtn" href="#"
-     style="flex:1;background:#cc0000;padding:10px;text-align:center;color:#fff;text-decoration:none;">
-    ⬇ Download
-  </a>
-  <button onclick="shareVideo()"
-     style="flex:1;background:#0088cc;border:none;color:#fff;">
-    🔗 Share
-  </button>
+<div style="display:flex;gap:10px;max-width:900px;margin:auto;">
+  <a id="download" href="#" style="flex:1;background:#cc0000;padding:10px;text-align:center;color:#fff;text-decoration:none;">⬇ Download</a>
+  <button onclick="share()" style="flex:1;background:#0088cc;border:none;color:#fff;">🔗 Share</button>
 </div>
 
-<!-- ================= BELOW VIDEO AD (SAFE – ALL DEVICES) ================= -->
-<div class="adbox">
-<script>
-  atOptions = {
-    'key' : '9419cc143f44d80cac2f52f79ceda29d',
-    'format' : 'iframe',
-    'height' : 250,
-    'width' : 300,
-    'params' : {}
-  };
-</script>
-<script src="https://www.highperformanceformat.com/9419cc143f44d80cac2f52f79ceda29d/invoke.js"></script>
-</div>
-<!-- ===================================================================== -->
+<!-- BELOW VIDEO AD (SAFE) -->
+<div class="adbox" id="belowAd"></div>
 
+<!-- SIDE ADS (DESKTOP ONLY) -->
+<div class="side-ads">
+  <div class="side-ad" id="leftAd"></div>
+  <div class="side-ad" id="rightAd"></div>
 </div>
 
-<!-- ================= POPUNDER (DESKTOP ONLY) ================= -->
-<script>
-if(!/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)){
-  var s=document.createElement("script");
-  s.src="https://pl28509879.effectivegatecpm.com/0e/57/a0/0e57a0d2b62e2772e4b19c701328e94e.js";
-  document.body.appendChild(s);
-}
-</script>
-<!-- =========================================================== -->
+</div>
 
 <script>
-function isMobile(){
-  return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-}
-
 function getParam(p){
   return new URLSearchParams(location.search).get(p);
 }
 
-window.onload=function(){
-  const v=getParam('v');
-  const t=getParam('t');
+window.onload = function(){
 
-  if(!v){
+  /* VIDEO LOAD FIRST */
+  const v = getParam("v");
+  const t = getParam("t");
+
+  if(!v || !v.startsWith("https://")){
     document.body.innerHTML="<h2 style='text-align:center;margin-top:50px;'>Video Not Found</h2>";
     return;
   }
 
-  if(!v.startsWith("https://")){
-    alert("Invalid video source");
-    return;
-  }
-
-  mainPlayer.src=v;
-  downloadBtn.href=v;
-
-  /* MOBILE SAFE PLAY */
-  if(isMobile()){
-    mainPlayer.autoplay=false;
-    mainPlayer.muted=false;
-  }
+  player.src = v;
+  download.href = v;
 
   if(t){
-    vidTitle.innerText=decodeURIComponent(t);
-    document.title=decodeURIComponent(t);
+    title.innerText = decodeURIComponent(t);
+    document.title = decodeURIComponent(t);
   }
 
-  /* 🚫 BLOCK MOBILE AD REDIRECT ON VIDEO TAP */
-  if(isMobile()){
-    document.addEventListener("click",function(e){
-      if(e.target.closest("video")) return;
-      e.stopPropagation();
-    },true);
-  }
+  /* ADS LOAD AFTER VIDEO READY */
+  player.onplaying = function(){
+
+    // BELOW VIDEO AD
+    belowAd.innerHTML = `
+<script>
+atOptions = {
+  'key' : '9419cc143f44d80cac2f52f79ceda29d',
+  'format' : 'iframe',
+  'height' : 250,
+  'width' : 300
+};
+<\/script>
+<script src="https://www.highperformanceformat.com/9419cc143f44d80cac2f52f79ceda29d/invoke.js"><\/script>
+`;
+
+    // SIDE ADS (DESKTOP)
+    if(window.innerWidth > 900){
+      leftAd.innerHTML = rightAd.innerHTML = `
+<script async data-cfasync="false"
+src="https://pl28509871.effectivegatecpm.com/89927707a9add77c81162243cfa9c89b/invoke.js"><\/script>
+<div id="container-89927707a9add77c81162243cfa9c89b"><\/div>
+`;
+    }
+  };
 };
 
-function shareVideo(){
+function share(){
   if(navigator.share){
     navigator.share({title:document.title,url:location.href});
   }else{
